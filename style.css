@@ -1,0 +1,477 @@
+/* ==========================================================================
+   1. 基本設定 & ルート
+   ========================================================================== */
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  color: #172033;
+  background: #f3f6fa;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: #f3f6fa;
+}
+
+body {
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom);
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, input {
+  font: inherit;
+}
+
+button {
+  appearance: none;
+  -webkit-appearance: none;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   2. アプリヘッダー
+   ========================================================================== */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: max(14px, env(safe-area-inset-top)) 18px 14px;
+  background: #1565c0;
+  color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: clamp(22px, 4vw, 30px);
+}
+
+.app-header p {
+  margin: 2px 0 0;
+  opacity: 0.9;
+  font-size: 13px;
+}
+
+/* ==========================================================================
+   3. メインレイアウト & カード
+   ========================================================================== */
+.app-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  gap: 16px;
+  max-width: 1200px;
+  margin: auto;
+  padding: 16px;
+}
+
+.card {
+  background: white;
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 2px 12px rgba(30, 50, 80, 0.08);
+}
+
+.card h2 {
+  margin: 0 0 14px;
+  font-size: 20px;
+}
+
+.section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.count-badge {
+  border-radius: 999px;
+  padding: 5px 10px;
+  background: #edf2f7;
+  color: #4b5563;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   4. 商品メニュー
+   ========================================================================== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.product-button {
+  min-height: 92px;
+  border: 0;
+  border-radius: 16px;
+  background: #e8f1fb;
+  color: #123a68;
+  padding: 14px;
+  font-weight: 700;
+  text-align: left;
+}
+
+.product-button:active {
+  transform: scale(0.98);
+  background: #d8e8f8;
+}
+
+.product-name {
+  display: block;
+  font-size: 17px;
+  line-height: 1.35;
+}
+
+.product-price {
+  display: block;
+  margin-top: 6px;
+  font-size: 15px;
+}
+
+.product-price.discount {
+  color: #b42318;
+}
+
+/* ==========================================================================
+   5. 注文カート・会計入力
+   ========================================================================== */
+.cart-list {
+  min-height: 180px;
+  max-height: 38vh;
+  overflow-y: auto;
+  border: 1px solid #e5eaf0;
+  border-radius: 12px;
+  padding: 6px;
+}
+
+.empty-message {
+  color: #7a8492;
+  text-align: center;
+  padding: 50px 10px;
+  margin: 0;
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+  padding: 11px 8px;
+  border-bottom: 1px solid #edf0f3;
+}
+
+.cart-item:last-child {
+  border-bottom: 0;
+}
+
+.cart-item-name {
+  font-weight: 700;
+}
+
+.cart-item-detail {
+  margin-top: 3px;
+  color: #687386;
+  font-size: 13px;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.quantity-button {
+  width: 38px;
+  height: 38px;
+  border: 1px solid #d4dbe4;
+  border-radius: 10px;
+  background: white;
+  font-size: 20px;
+}
+
+.quantity {
+  min-width: 24px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.total-box, .change-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 14px;
+  padding: 13px 15px;
+  margin-top: 12px;
+}
+
+.total-box {
+  background: #eef5fd;
+  color: #0f427a;
+}
+
+.total-box strong {
+  font-size: 25px;
+}
+
+.cash-label {
+  display: block;
+  margin-top: 16px;
+  margin-bottom: 7px;
+  font-weight: 700;
+}
+
+.cash-input {
+  width: 100%;
+  min-height: 52px;
+  border: 2px solid #d7dee8;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 22px;
+  outline: none;
+}
+
+.cash-input:focus {
+  border-color: #1565c0;
+}
+
+.change-box {
+  background: #f5f6f8;
+  color: #343b48;
+}
+
+.change-box.ok {
+  background: #eaf7ef;
+  color: #176b3a;
+}
+
+.change-box.shortage {
+  background: #fff0ef;
+  color: #b42318;
+}
+
+.change-box strong {
+  font-size: 21px;
+}
+
+/* ==========================================================================
+   6. ボタン類
+   ========================================================================== */
+.action-row {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.cancel-button, .checkout-button, .secondary-button, .danger-button {
+  min-height: 50px;
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 15px;
+  font-weight: 800;
+}
+
+.cancel-button {
+  background: #eef0f3;
+  color: #4b5563;
+}
+
+.checkout-button {
+  background: #1565c0;
+  color: white;
+  font-size: 17px;
+}
+
+.secondary-button {
+  background: white;
+  color: #174d82;
+}
+
+.app-header .secondary-button {
+  background: rgba(255, 255, 255, 0.18);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.danger-button {
+  background: #fff0ef;
+  color: #b42318;
+}
+
+/* ==========================================================================
+   7. トーストメッセージ
+   ========================================================================== */
+.message {
+  position: fixed;
+  left: 50%;
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  z-index: 100;
+  transform: translate(-50%, 140px);
+  background: #202733;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 999px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.message.show {
+  transform: translate(-50%, 0);
+}
+
+/* ==========================================================================
+   8. 会計履歴モーダル (dialog)
+   ========================================================================== */
+.history-dialog {
+  width: min(900px, calc(100vw - 28px));
+  max-height: 88vh;
+  border: 0;
+  border-radius: 18px;
+  padding: 0;
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.25);
+}
+
+.history-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid #e7ebef;
+}
+
+.dialog-header h2 {
+  margin: 0;
+}
+
+.icon-button {
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  background: #eef0f3;
+  font-size: 25px;
+}
+
+.history-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 18px 10px;
+  padding: 15px;
+  border-radius: 14px;
+  background: #eef5fd;
+  color: #0f427a;
+}
+
+.history-summary strong {
+  font-size: 24px;
+}
+
+.history-list {
+  max-height: 48vh;
+  overflow: auto;
+  margin: 0 18px;
+  border: 1px solid #e4e8ed;
+  border-radius: 12px;
+}
+
+.history-item {
+  padding: 13px;
+  border-bottom: 1px solid #edf0f3;
+}
+
+.history-item:last-child {
+  border-bottom: 0;
+}
+
+.history-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-weight: 800;
+}
+
+.history-date {
+  color: #657083;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.history-detail {
+  margin-top: 5px;
+  color: #4e5968;
+  font-size: 13px;
+}
+
+.history-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 18px;
+}
+
+/* ==========================================================================
+   9. レスポンシブ対応 (Media Queries)
+   ========================================================================== */
+@media (max-width: 760px) {
+  .app-main {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-list {
+    max-height: 30vh;
+  }
+
+  .app-header {
+    position: relative;
+  }
+}
+
+@media (max-width: 460px) {
+  .app-main {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .card {
+    padding: 13px;
+    border-radius: 15px;
+  }
+
+  .product-grid {
+    gap: 8px;
+  }
+
+  .product-button {
+    min-height: 82px;
+    padding: 10px;
+  }
+
+  .product-name {
+    font-size: 15px;
+  }
+
+  .history-actions {
+    flex-direction: column;
+  }
+
+  .history-actions button {
+    width: 100%;
+  }
+}
