@@ -22,6 +22,8 @@ const $ = (id) => document.getElementById(id),
   historyDialog = $('historyDialog'),
   historyList = $('historyList'),
   historyTotalSales = $('historyTotalSales'),
+  historyTotalPeople=$("historyTotalPeople"),
+historyTotalGroups=$("historyTotalGroups"),
   importButton = $('importButton'),
   importFileInput = $('importFileInput');
 
@@ -175,6 +177,21 @@ function formatDate(s) {
 
 function renderHistory() {
   const ts = getTransactions();
+  const totalGroup = ts.length;
+  const totalPeople = ts.reduce((sum, transaction) => {
+      const People = (transaction.items || []).reduce((Peoplesum, item) => {
+        if (item.name !== "ビラ持参orSNSフォロー") {
+          return Peoplesum+item.quantity
+        }
+        return Peoplesum
+      }, 0);
+        
+        return sum + People
+
+  },0)
+  historyTotalPeople.textContent = totalPeople + "人";
+  historyTotalGroups.textContent = totalGroup + "団体";
+
   historyList.innerHTML = '';
   historyTotalSales.textContent = yen(ts.reduce((s, t) => s + Number(t.amount || 0), 0));
   if (!ts.length) {
