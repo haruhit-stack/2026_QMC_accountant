@@ -138,7 +138,9 @@ function checkout() {
   const total = getTotal(),
     received = parseInt(cashReceived.value, 10);
   if (!Number.isFinite(received) || received < total) return showMessage('受け取った現金が不足しています');
-  if (totalPrice < 0) return showMessage('金額がマイナスです');
+  const hasNormalProduct = currentCart.some(product => product.price >= 0)
+
+  if(!hasNormalProduct) return showMessage("通常商品を選択してください")
 
   const t = {
     id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
