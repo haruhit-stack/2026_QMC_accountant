@@ -309,8 +309,8 @@ button {
 }
 
 .delete-button {
-  width: 46px;
-  height: 46px;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
   margin-left: auto;
 
