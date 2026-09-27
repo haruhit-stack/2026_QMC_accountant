@@ -22,8 +22,8 @@ const $ = (id) => document.getElementById(id),
   historyDialog = $('historyDialog'),
   historyList = $('historyList'),
   historyTotalSales = $('historyTotalSales'),
-  historyTotalPeople=$("historyTotalPeople"),
-historyTotalGroups=$("historyTotalGroups"),
+  historyTotalPeople = $('historyTotalPeople'),
+  historyTotalGroups = $('historyTotalGroups'),
   importButton = $('importButton'),
   importFileInput = $('importFileInput');
 
@@ -140,9 +140,9 @@ function checkout() {
   const total = getTotal(),
     received = parseInt(cashReceived.value, 10);
   if (!Number.isFinite(received) || received < total) return showMessage('受け取った現金が不足しています');
-  const hasNormalProduct = currentCart.some(product => product.price >= 0)
+  const hasNormalProduct = currentCart.some((product) => product.price >= 0);
 
-  if(!hasNormalProduct) return showMessage("通常商品を選択してください")
+  if (!hasNormalProduct) return showMessage('通常商品を選択してください');
 
   const t = {
     id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
@@ -179,18 +179,17 @@ function renderHistory() {
   const ts = getTransactions();
   const totalGroup = ts.length;
   const totalPeople = ts.reduce((sum, transaction) => {
-      const People = (transaction.items || []).reduce((Peoplesum, item) => {
-        if (item.name !== "ビラ持参orSNSフォロー") {
-          return Peoplesum+item.quantity
-        }
-        return Peoplesum
-      }, 0);
-        
-        return sum + People
+    const People = (transaction.items || []).reduce((Peoplesum, item) => {
+      if (item.name !== 'ビラ持参orSNSフォロー') {
+        return Peoplesum + item.quantity;
+      }
+      return Peoplesum;
+    }, 0);
 
-  },0)
-  historyTotalPeople.textContent = totalPeople + "人";
-  historyTotalGroups.textContent = totalGroup + "団体";
+    return sum + People;
+  }, 0);
+  historyTotalPeople.textContent = totalPeople + '人';
+  historyTotalGroups.textContent = totalGroup + '団体';
 
   historyList.innerHTML = '';
   historyTotalSales.textContent = yen(ts.reduce((s, t) => s + Number(t.amount || 0), 0));
@@ -200,6 +199,22 @@ function renderHistory() {
   }
   [...ts].reverse().forEach((t) => {
     const x = document.createElement('div');
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = '🗑';
+
+    deleteButton.onclick = () => {
+      if (confirm('この会計履歴を削除しますか？')) {
+        const transactions = getTransactions();
+
+        const newTransactions = transactions.filter((transaction) => {
+          if (transaction.id !== t.id) return true;
+          else return false;
+        });
+        saveTransactions(newTransactions);
+        renderHistory();
+      }
+    };
+
     x.className = 'history-item';
     x.innerHTML =
       '<div class="history-top"><span class="amount"></span><span class="history-date"></span></div><div class="history-detail"></div>';
@@ -208,6 +223,8 @@ function renderHistory() {
     x.querySelector('.history-detail').textContent =
       `${(t.items || []).map((i) => `${i.name} ×${i.quantity}`).join('、')}｜受取 ${yen(t.received)}｜お釣り ${yen(t.change)}`;
     historyList.appendChild(x);
+    x.appendChild(deleteButton);
+    deleteButton.className = 'delete-button';
   });
 }
 
