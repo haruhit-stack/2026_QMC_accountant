@@ -200,7 +200,14 @@ function renderHistory() {
   [...ts].reverse().forEach((t) => {
     const x = document.createElement('div');
     const deleteButton = document.createElement('button');
-    deleteButton.textContent = '🗑';
+    deleteButton.innerHTML = `
+  <svg viewBox="0 0 24 24" width="22" height="22">
+    <path
+      d="M9 3h6l1 2h4v2H4V5h4l1-2zM6 9h12l-1 12H7L6 9zm4 2v8h2v-8h-2zm4 0v8h2v-8h-2z"
+      fill="currentColor"
+    />
+  </svg>
+`;
 
     deleteButton.onclick = () => {
       if (confirm('この会計履歴を削除しますか？')) {
@@ -217,7 +224,7 @@ function renderHistory() {
 
     x.className = 'history-item';
     x.innerHTML =
-      '<div class="history-top"><span class="amount"></span><span class="history-date"></span></div><div class="history-detail"></div>';
+      '<div class="history-content"><div class="history-top"><span class="amount"></span><span class="history-date"></span></div><div class="history-detail"></div></div>';
     x.querySelector('.amount').textContent = yen(t.amount);
     x.querySelector('.history-date').textContent = formatDate(t.timestamp);
     x.querySelector('.history-detail').textContent =
