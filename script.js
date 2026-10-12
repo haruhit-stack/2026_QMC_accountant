@@ -87,8 +87,7 @@ function renderCart() {
       r.className = 'cart-item';
       r.innerHTML = `<div><div class="cart-item-name"></div><div class="cart-item-detail"></div></div><div class="quantity-controls"><button class="quantity-button">−</button><span class="quantity"></span><button class="quantity-button">+</button></div>`;
       r.querySelector('.cart-item-name').textContent = i.name;
-      r.querySelector('.cart-item-detail').textContent =
-        `${yen(i.price)} × ${i.quantity} = ${yen(i.price * i.quantity)}`;
+      r.querySelector('.cart-item-detail').textContent = `${yen(i.price)} × ${i.quantity} = ${yen(i.price * i.quantity)}`;
       r.querySelector('.quantity').textContent = i.quantity;
       r.querySelectorAll('.quantity-button')[0].onclick = () => changeQuantity(i.name, -1);
       r.querySelectorAll('.quantity-button')[1].onclick = () => changeQuantity(i.name, 1);
@@ -187,7 +186,7 @@ function renderHistory() {
   const totalGroup = ts.length;
   const totalPeople = ts.reduce((sum, transaction) => {
     const People = (transaction.items || []).reduce((Peoplesum, item) => {
-      if (item.name !== 'ビラ持参orSNSフォロー') {
+      if (item.name !== 'ビラ持参orSNSフォロー'&& item.name !== '小学生以下の付き添いの大人') {
         return Peoplesum + item.quantity;
       }
       return Peoplesum;
