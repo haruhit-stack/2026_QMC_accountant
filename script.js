@@ -9,40 +9,29 @@ const PRODUCTS = [
 const STORAGE_KEY = 'qmc_register_transactions_v1';
 let currentCart = [];
 
-const $ = (id) => document.getElementById(id),
-  productButtons = $('productButtons'),
-  cartList = $('cartList'),
-  cartCount = $('cartCount'),
-  totalPrice = $('totalPrice'),
-  cashReceived = $('cashReceived'),
-  changeBox = $('changeBox'),
-  changeLabel = $('changeLabel'),
-  changeAmount = $('changeAmount'),
-  message = $('message'),
-  historyDialog = $('historyDialog'),
-  historyList = $('historyList'),
-  historyTotalSales = $('historyTotalSales'),
-  historyTotalPeople = $('historyTotalPeople'),
-  historyTotalGroups = $('historyTotalGroups'),
-  importButton = $('importButton'),
-  importFileInput = $('importFileInput');
+// サーバーからデータを保持しておく変数
+let transactionsCache = [];
 
-function yen(v) {
-  return Number(v).toLocaleString('ja-JP') + '円';
-}
-
-function getTransactions() {
+// サーバーから最新データを非同期で取得する関数
+async function fetchTransactions() {
   try {
-    const x = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    return Array.isArray(x) ? x : [];
-  } catch {
-    return [];
+    const res = await fetch('/api/transactions');
+    if (res.ok) {
+      transactionsCache = await res.json();
+    }
+  } catch (err) {
+    console.error('データの取得に失敗しました', err);
   }
+  return transactionsCache;
 }
 
-function saveTransactions(x) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(x));
+// 従来の関数名を変えずに、中身をキャッシュを返すようにする
+function getTransactions() {
+  return transactionsCache;
 }
+
+
+const $ = (id) => document.getElementById(id);
 
 function showMessage(t) {
   message.textContent = t;
@@ -135,7 +124,7 @@ function clearCart() {
   renderCart();
 }
 
-function checkout() {
+async function checkout() {
   if (!currentCart.length) return showMessage('商品が選択されていません');
   const total = getTotal(),
     received = parseInt(cashReceived.value, 10);
@@ -144,7 +133,7 @@ function checkout() {
 
   if (!hasNormalProduct) return showMessage('通常商品を選択してください');
 
-  const t = {
+const t = {
     id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
     timestamp: new Date().toISOString(),
     amount: total,
@@ -153,11 +142,25 @@ function checkout() {
     items: currentCart.map((i) => ({ name: i.name, price: i.price, quantity: i.quantity }))
   };
 
-  const ts = getTransactions();
-  ts.push(t);
-  saveTransactions(ts);
-  showMessage('会計は完了しました');
-  clearCart();
+  try {
+    // サーバーへデータを送信する
+    const res = await fetch('/api/transactions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(t)
+    });
+
+    if (res.ok) {
+      await fetchTransactions(); // キャッシュを最新に更新
+      showMessage('会計は完了しました');
+      clearCart();
+    } else {
+      showMessage('会計の保存に失敗しました');
+    }
+  } catch (err) {
+    console.error(err);
+    showMessage('サーバー通信エラー');
+  }
 }
 
 function formatDate(s) {
@@ -209,16 +212,25 @@ function renderHistory() {
   </svg>
 `;
 
-    deleteButton.onclick = () => {
+// async を追加
+    deleteButton.onclick = async () => {
       if (confirm('この会計履歴を削除しますか？')) {
-        const transactions = getTransactions();
-
-        const newTransactions = transactions.filter((transaction) => {
-          if (transaction.id !== t.id) return true;
-          else return false;
-        });
-        saveTransactions(newTransactions);
-        renderHistory();
+        try {
+          // サーバーに削除を依頼
+          const res = await fetch(`/api/transactions/${t.id}`, {
+            method: 'DELETE'
+          });
+          if (res.ok) {
+            await fetchTransactions();
+            renderHistory();
+            showMessage('履歴を削除しました');
+          } else {
+            showMessage('削除に失敗しました');
+          }
+        } catch (err) {
+          console.error(err);
+          showMessage('サーバー通信エラー');
+        }
       }
     };
 
@@ -330,16 +342,31 @@ function importCSV(e) {
   reader.readAsText(file, 'UTF-8');
 }
 
-function clearHistory() {
-  if (!getTransactions().length) return showMessage('削除する履歴がありません');
+// async を追加
+async function clearHistory() {
+  if (!transactionsCache.length) return showMessage('削除する履歴がありません');
   if (confirm('会計履歴をすべて削除します。\nこの操作は元に戻せません。')) {
-    localStorage.removeItem(STORAGE_KEY);
-    renderHistory();
-    showMessage('会計履歴を削除しました');
+    try {
+      const res = await fetch('/api/transactions', {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        await fetchTransactions();
+        renderHistory();
+        showMessage('会計履歴を削除しました');
+      } else {
+        showMessage('削除に失敗しました');
+      }
+    } catch (err) {
+      console.error(err);
+      showMessage('サーバー通信エラー');
+    }
   }
 }
 
-$('historyButton').onclick = () => {
+// async と await を追加
+$('historyButton').onclick = async () => {
+  await fetchTransactions(); // 開く前にサーバーから最新を取得
   renderHistory();
   historyDialog.showModal();
 };
