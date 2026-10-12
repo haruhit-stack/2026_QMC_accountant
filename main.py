@@ -10,6 +10,11 @@ from sqlalchemy.orm import sessionmaker
 import json
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL:
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
+    elif DATABASE_URL.startswith("postgresql://"):
+        DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
 
 # SQLAlchemyの設定
 engine = create_engine(DATABASE_URL)
@@ -24,7 +29,7 @@ class TransactionModel(Base):
     amount = Column(Integer)
     received = Column(Integer)
     change = Column(Integer)
-    items_json = Column(Text)  
+    items_json = Column(Text)
 
 # テーブルを自動作成
 Base.metadata.create_all(bind=engine)
