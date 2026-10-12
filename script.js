@@ -6,6 +6,10 @@ const PRODUCTS = [
   { name: '小学生以下の付き添いの大人', price: -100 }
 ];
 
+function yen(n) {
+  return new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(n);
+}
+
 const STORAGE_KEY = 'qmc_register_transactions_v1';
 let currentCart = [];
 
