@@ -184,17 +184,28 @@ function formatDate(s) {
 function renderHistory() {
   const ts = getTransactions();
   const totalGroup = ts.length;
-  const totalPeople = ts.reduce((sum, transaction) => {
-    const People = (transaction.items || []).reduce((Peoplesum, item) => {
-      if (item.name !== 'ビラ持参orSNSフォロー'&& item.name !== '小学生以下の付き添いの大人') {
-        return Peoplesum + item.quantity;
-      }
-      return Peoplesum;
-    }, 0);
 
-    return sum + People;
-  }, 0);
-  historyTotalPeople.textContent = totalPeople + '人';
+  let adultCount = 0;
+  let childCount = 0;
+
+  ts.forEach((transaction) => {
+    (transaction.items || []).forEach((item) => {
+      if (item.name === '大人') {
+        adultCount += item.quantity;
+      } else if (
+        item.name === '小学生以下' ||
+        item.name === '三歳以下'
+      ) {
+        childCount += item.quantity;
+      }
+    });
+  });
+
+
+  historyAdultCount.textContent = adultCount + '人';
+  historyChildCount.textContent = childCount + '人';
+
+  historyTotalPeople.textContent = (adultCount + childCount) + '人';
   historyTotalGroups.textContent = totalGroup + '団体';
 
   historyList.innerHTML = '';
